@@ -39,8 +39,6 @@ contract UpgradeTreasury is Script {
         Treasury implementationV2 = new Treasury();
         wrappedProxyV1.upgradeTo(address(implementationV2));
 
-        wrappedProxyV2 = Treasury(address(proxy));
-
         vm.stopBroadcast();
     }
 }
