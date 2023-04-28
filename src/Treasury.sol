@@ -4,9 +4,9 @@ pragma solidity ^0.8.12;
 import { PausableUpgradeable } from "@openzeppelin-upgradeable/contracts/security/PausableUpgradeable.sol";
 import { OwnableUpgradeable } from "@openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
 import { Initializable } from "@openzeppelin-upgradeable/contracts/proxy/utils/Initializable.sol";
+import { UUPSUpgradeable } from "@openzeppelin-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol";
 
-
-contract MyContract is Initializable, PausableUpgradeable, OwnableUpgradeable {
+contract Treasury is Initializable, PausableUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
     uint256 public x;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -14,9 +14,10 @@ contract MyContract is Initializable, PausableUpgradeable, OwnableUpgradeable {
         _disableInitializers();
     }
 
-    function initialize(uint _x) initializer public {
+    function initialize(uint256 _x) public initializer {
         __Pausable_init();
         __Ownable_init();
+        __UUPSUpgradeable_init();
         x = _x;
     }
 
@@ -27,31 +28,10 @@ contract MyContract is Initializable, PausableUpgradeable, OwnableUpgradeable {
     function unpause() public onlyOwner {
         _unpause();
     }
-}
 
-contract MyContractV2 is Initializable, PausableUpgradeable, OwnableUpgradeable {
-    uint256 public x;
-    uint256 public y;
+    function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
-
-    function initialize() initializer public {
-        __Pausable_init();
-        __Ownable_init();
-    }
-
-    function pause() public onlyOwner {
-        _pause();
-    }
-
-    function unpause() public onlyOwner {
-        _unpause();
-    }
-
-    function setY(uint _y) external {
-        y = _y;
+    function getImplementation() external view returns (address) {
+        return _getImplementation();
     }
 }
